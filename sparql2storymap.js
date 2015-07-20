@@ -90,11 +90,12 @@ EventMapper.prototype.makeObject = function(event) {
     var e = {};
 
     e.id = event.id.value;
-    e.type = event.type.value;
+    e.type = event.type ? event.type.value : '';
     e.description = event.description.value;
     e.start_time = event.start_time.value;
     e.end_time = event.end_time.value;
-    e.place_label = event.place_label.value;
+    e.title = event.title ? event.title.value : event.description.value.split('.')[0];
+    //e.place_label = event.place_label.value;
 
     if (event.polygon) {
         // The event's location is represented as a polygon.
@@ -167,7 +168,7 @@ function createStoryMap(url, qry, overview_title, overview_text, map_config) {
             }
 
             ev.text = {
-                headline: e.description.split('.')[0],
+                headline: e.title,
             text: e.description
             };
             res.push(ev);
