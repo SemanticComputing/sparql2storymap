@@ -14,13 +14,15 @@ Include the requirements:
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
 ```
 
+Also include `sparql2storymap.js`
+
 Put a div with id `mapdiv` in your html file:
 
 ```
 <div id="mapdiv" style="width: 100%; height: 600px;"></div> 
 ```
 
-Note that you need to specify width and height for the div (like above or with css).
+Note that you need to specify width and height for the div (like above or with CSS).
 
 Then call `createStoryMap` to create the StoryMap:
 
