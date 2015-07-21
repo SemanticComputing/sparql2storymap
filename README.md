@@ -4,9 +4,35 @@ Create a [StoryMap](https://storymap.knightlab.com/) with SPARQL.
 
 ## Usage
 
-See [example.js](https://github.com/SemanticComputing/sparql2storymap/blob/master/example.js) and [map.html](https://github.com/SemanticComputing/sparql2storymap/blob/master/map.html)
+See [example.js](https://github.com/SemanticComputing/sparql2storymap/blob/master/example.js) and [map.html](https://github.com/SemanticComputing/sparql2storymap/blob/master/map.html) for an example.
 
-The SPARQL query results should include the following variables: `?id ?start_time ?end_time ?description ?lat ?lon ?title`. If `?title` is not included, characters until the first period in `?description` will be used for the event title.
+```
+createStoryMap(url, qry, overview_title, overview_text, map_config)
+```
+
+`url` is the SPARQL endpoint URL.
+
+`qry` is the SPARQL query. The query results should include the following variables: `?id ?start_time ?end_time ?description ?lat ?lon ?title`. If `?title` is not included, characters until the first period in `?description` will be used for the event title.
+
+`overview_title` is the title for the first (overview) slide.
+
+`overview_text` is the text for the first (overview) slide.
+
+`map_config` is an object with the map configuration. This is optional, and the default is:
+
+```
+map_config = {
+    width: 800,
+    heigth: 600,
+    storymap: {
+        language: 'fi',
+        map_type: "stamen:toner-lite",
+        map_as_image: false,
+    }
+}
+```
+
+See [StoryMap technical details](https://storymap.knightlab.com/advanced/) for details on the structure of the configuration.
 
 ## Requirements
 

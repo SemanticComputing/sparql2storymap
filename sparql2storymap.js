@@ -156,10 +156,10 @@ function createStoryMap(url, qry, overview_title, overview_text, map_config) {
                     language: 'fi',
                     map_type: "stamen:toner-lite",
                     map_as_image: false,
-                    slides: res
                 }
             };
         }
+        map_data.storymap.slides = res;
         /* global VCO */
         if (map_data.storymap.language === 'fi') {
             VCO.Language = {
