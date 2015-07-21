@@ -6,6 +6,24 @@ Create a [StoryMap](https://storymap.knightlab.com/) with SPARQL.
 
 See [example.js](https://github.com/SemanticComputing/sparql2storymap/blob/master/example.js) and [map.html](https://github.com/SemanticComputing/sparql2storymap/blob/master/map.html) for an example.
 
+Include the requirements:
+
+```
+<link rel="stylesheet" href="https://cdn.knightlab.com/libs/storymapjs/latest/css/storymap.css">
+<script type="text/javascript" src="https://cdn.knightlab.com/libs/storymapjs/latest/js/storymap-min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
+```
+
+Put a div with id `mapdiv` in your html file:
+
+```
+<div id="mapdiv" style="width: 100%; height: 600px;"></div> 
+```
+
+Note that you need to specify width and height for the div (like above or with css).
+
+Then call `createStoryMap` to create the StoryMap:
+
 ```
 createStoryMap(url, qry, overview_title, overview_text, map_config)
 ```
