@@ -18,10 +18,12 @@ You will need to serve the files with a web server (just opening `map.html` from
 
 A simple web server is included for testing purposes. It requires `node` and packages `connect` and `serve-static`.
 
-Install the dependencies if needed with:
+Install the dependencies if needed:
 
 ```
 npm install -g connect serve-static
 ```
 
-Then run the server with `node server.js`.
+Run the server with `node server.js`
+
+Then navigate to `http://localhost:8080/map.html`
