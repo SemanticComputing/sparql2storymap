@@ -19,7 +19,7 @@ function init() {
         '         crm:P7_took_place_at ?place_id .' +
         '   ?time_id crm:P82a_begin_of_the_begin ?start_time ;' +
         '         crm:P82b_end_of_the_end ?end_time .' +
-        '   {0}' + // Placeholder for a filter
+        '   FILTER(?start_time >= "1939-08-01"^^xsd:date && ?end_time <= "1940-04-30"^^xsd:date)' +
         '   OPTIONAL { ' +
         '         ?place_id geo:lat ?lat ;' +
         '         geo:long ?lon .' +

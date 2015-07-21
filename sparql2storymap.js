@@ -1,15 +1,3 @@
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
-}
-
 function SparqlService(endpointUrl) {
 
     var executeQuery = function(sparqlQry, callback) {
@@ -123,24 +111,8 @@ function EventService(url, qry) {
     var endpoint = new SparqlService(url);
     var mapper = new EventMapper();
 
-    var eventFilterWithinTimeSpan =
-        'FILTER(?start_time >= "{0}"^^xsd:date && ?end_time <= "{1}"^^xsd:date)';
-
-    var eventsWithinTimeSpanQry = qry.format(eventFilterWithinTimeSpan);
-
-    var allEventsQry = qry.format("");
-
-    this.getEventsByTimeSpan = function(start, end) {
-        // Get events that occured between the dates start and end (inclusive).
-        // Returns a promise.
-        return endpoint.getObjects(eventsWithinTimeSpanQry.format(start, end), 
-                mapper.makeObjectList);
-    };
-
-    this.getAllEvents = function(callback) {
-        // Get all events.
-        // Returns a promise.
-        return endpoint.getObjects(allEventsQry, function(data) { 
+    this.getEvents = function(callback) {
+        return endpoint.getObjects(qry, function(data) { 
             return mapper.makeObjectList(data, callback);
         });
     };
@@ -213,5 +185,5 @@ function createStoryMap(url, qry, overview_title, overview_text, map_config) {
         };
     };
     var es = new EventService(url, qry);
-    es.getAllEvents(storyMapCallback);
+    es.getEvents(storyMapCallback);
 }
