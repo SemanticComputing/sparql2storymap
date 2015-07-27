@@ -32,7 +32,11 @@ createStoryMap(url, qry, overview_title, overview_text, map_config)
 
 `url` is the SPARQL endpoint URL.
 
-`qry` is the SPARQL query. The query results should include the following variables: `?id ?start_time ?end_time ?description ?lat ?lon ?title`. If `?title` is not included, characters until the first period in `?description` will be used for the event title.
+`qry` is the SPARQL query. The query results should include the following variables: 
+`?id ?start_time ?end_time ?description ?lat ?lon ?title`. 
+`?id` will be used to group events together so that each event appears only once. 
+If an event has, e.g., multiple values for `?place_label` only one of them will be shown on the map. 
+If `?title` is not included, the title of each slide will be `[?place_label + ' ' + ]?time_start[-?time_end]` (multiple `?place_label`s will be concatenated).
 
 `overview_title` is the title for the first (overview) slide.
 

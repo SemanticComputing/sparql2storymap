@@ -42,6 +42,12 @@ ObjectMapper.prototype.mergeObjects = function(first, second) {
         if (_.isArray(a)) {
             return a.concat(b);
         }
+        if (a && !b) {
+            return a;
+        }
+        if (b && !a) {
+            return b;
+        }
         return [a, b];
     });
 };
@@ -71,6 +77,23 @@ ObjectMapper.prototype.makeObjectList = function(objects, callback) {
 function EventMapper() { }
 
 EventMapper.prototype = Object.create(ObjectMapper.prototype);
+
+EventMapper.prototype.createTitle = function(event) {
+    var time = new Date(event.start_time).toLocaleDateString();
+    if (event.end_time !== event.start_time) {
+        time += '-' + event.end_time;
+    }
+    var place;
+    if (_.isArray(event.place_label)) {
+        place = event.place_label.join(", ");
+    } else {
+        place = event.place_label;
+    }
+
+    return place ? place + ' ' + time : time;
+};
+
+
 EventMapper.prototype.makeObject = function(event) {
     // Take the event as received and turn it into an object that
     // is easier to handle.
@@ -82,8 +105,14 @@ EventMapper.prototype.makeObject = function(event) {
     e.description = event.description.value;
     e.start_time = event.start_time.value;
     e.end_time = event.end_time.value;
-    e.title = event.title ? event.title.value : event.description.value.split('.')[0];
-    //e.place_label = event.place_label.value;
+    e.place_label = event.place_label ? event.place_label.value : '';
+    if (event.title) {
+        e.title = event.title.value;
+        e.hasDefaultTitle = false;
+    } else {
+        e.title = this.createTitle(e);
+        e.hasDefaultTitle = true;
+    }
 
     if (event.polygon) {
         // The event's location is represented as a polygon.
@@ -100,12 +129,21 @@ EventMapper.prototype.makeObject = function(event) {
         // The event's location is represented as a point.
         e.points = [{
             lat: event.lat.value,
-                lon: event.lon.value
+            lon: event.lon.value
         }];
     }
 
     return e;
 };
+
+EventMapper.prototype.mergeObjects = function(first, second) {
+    var merged = ObjectMapper.prototype.mergeObjects.call(this, first, second);
+    if (merged.hasDefaultTitle) {
+        merged.title = this.createTitle(merged);
+    }
+    return merged;
+};
+
 
 function EventService(url, qry) {
     var endpoint = new SparqlService(url);
