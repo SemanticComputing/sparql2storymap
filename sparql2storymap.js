@@ -5,7 +5,7 @@ function SparqlService(endpointUrl) {
         xmlhttp.onreadystatechange = function()
         {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                callback(JSON.parse(xmlhttp.responseText).results.bindings);
+                return callback(JSON.parse(xmlhttp.responseText).results.bindings);
             }
         };
         xmlhttp.open("GET", endpointUrl + '?query=' + encodeURIComponent(sparqlQry) + '&format=json', true);
@@ -156,16 +156,14 @@ function EventService(url, qry) {
     };
 }
 
-var storymap;
-var qrr;
-var urll;
-
 function clearElement(id) {
     e = document.getElementById(id);
     while (e.firstChild) { e.removeChild(e.firstChild); }
 }
 
 function createStoryMap(container_id, url, qry, overview_title, overview_text, map_config) {
+    var storymap;
+
     var storyMapCallback = function(data) {
         var res = [
         {
@@ -226,13 +224,16 @@ function createStoryMap(container_id, url, qry, overview_title, overview_text, m
             };
             map_data.storymap.language = 'en';
         }
-        storymap = new VCO.StoryMap(container_id, map_data);
+        var storymap = new VCO.StoryMap(container_id, map_data);
+
         window.onresize = function() {
             storymap.updateDisplay();
         };
+
+        return storymap;
     };
     var es = new EventService(url, qry);
-    es.getEvents(storyMapCallback);
+    return es.getEvents(storyMapCallback);
 }
 
 function insertStoryMap(container_id, url, qry, overview_title, overview_text, map_config) {
