@@ -16,7 +16,7 @@ Include the requirements:
 
 Also include `sparql2storymap.js`
 
-Put a div with id `mapdiv` in your html file:
+Put a div with in your html file (do not include any content in the div as it would be removed):
 
 ```
 <div id="mapdiv" style="width: 100%; height: 600px;"></div> 
@@ -24,11 +24,13 @@ Put a div with id `mapdiv` in your html file:
 
 Note that you need to specify width and height for the div (like above or with CSS).
 
-Then call `createStoryMap` to create the StoryMap:
+Then call `insertStoryMap` to create the StoryMap:
 
 ```
-createStoryMap(url, qry, overview_title, overview_text, map_config)
+insertStoryMap('mapdiv', url, qry, overview_title, overview_text, map_config)
 ```
+
+The first parameter is the id of the container div.
 
 `url` is the SPARQL endpoint URL.
 

@@ -81,7 +81,7 @@ EventMapper.prototype = Object.create(ObjectMapper.prototype);
 EventMapper.prototype.createTitle = function(event) {
     var time = new Date(event.start_time).toLocaleDateString();
     if (event.end_time !== event.start_time) {
-        time += '-' + event.end_time;
+        time += '-' + new Date(event.end_time).toLocaleDateString();
     }
     var place;
     if (_.isArray(event.place_label)) {
@@ -156,8 +156,16 @@ function EventService(url, qry) {
     };
 }
 
+var storymap;
+var qrr;
+var urll;
 
-function createStoryMap(url, qry, overview_title, overview_text, map_config) {
+function clearElement(id) {
+    e = document.getElementById(id);
+    while (e.firstChild) { e.removeChild(e.firstChild); }
+}
+
+function createStoryMap(container_id, url, qry, overview_title, overview_text, map_config) {
     var storyMapCallback = function(data) {
         var res = [
         {
@@ -216,12 +224,18 @@ function createStoryMap(url, qry, overview_title, overview_text, map_config) {
                     uncollapse_toggle:  "Näytä kartta"
                 }
             };
+            map_data.storymap.language = 'en';
         }
-        var storymap = new VCO.StoryMap('mapdiv', map_data);
+        storymap = new VCO.StoryMap(container_id, map_data);
         window.onresize = function() {
             storymap.updateDisplay();
         };
     };
     var es = new EventService(url, qry);
     es.getEvents(storyMapCallback);
+}
+
+function insertStoryMap(container_id, url, qry, overview_title, overview_text, map_config) {
+    clearElement(container_id);
+    createStoryMap(container_id, url, qry, overview_title, overview_text, map_config);
 }

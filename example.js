@@ -27,7 +27,8 @@ function init() {
         '   OPTIONAL { ?place_id sch:polygon ?polygon . }' +
         '   OPTIONAL { ?place_id skos:prefLabel ?place_label . }' +
         ' }' +
-        ' ORDER BY ?start_time ?end_time';
+        ' ORDER BY ?start_time ?end_time' +
+        ' LIMIT 10';
 
-    createStoryMap(url, eventQry, "Talvisota", "Suomi taisteli");
+    insertStoryMap('mapdiv', url, eventQry, "Talvisota", "Suomi taisteli");
 }
