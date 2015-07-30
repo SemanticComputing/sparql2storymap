@@ -40,6 +40,21 @@ ObjectMapper.prototype.mergeObjects = function(first, second) {
             return a;
         }
         if (_.isArray(a)) {
+            if (_.isArray(b)) {
+                var res = [];
+                [a, b].forEach(function(l) {
+                    l.forEach(function(val) {
+                        var value = _.find(res, val);
+                        if (!value) {
+                            res.push(val);
+                        }
+                    });
+                });
+                return res;
+            }
+            if (_.find(a, function(val) { return _.isEqual(val, b); })) {
+                return a;
+            }
             return a.concat(b);
         }
         if (a && !b) {
@@ -78,22 +93,6 @@ function EventMapper() { }
 
 EventMapper.prototype = Object.create(ObjectMapper.prototype);
 
-EventMapper.prototype.createTitle = function(event) {
-    var time = new Date(event.start_time).toLocaleDateString();
-    if (event.end_time !== event.start_time) {
-        time += '-' + new Date(event.end_time).toLocaleDateString();
-    }
-    var place;
-    if (_.isArray(event.place_label)) {
-        place = event.place_label.join(", ");
-    } else {
-        place = event.place_label;
-    }
-
-    return place ? place + ' ' + time : time;
-};
-
-
 EventMapper.prototype.makeObject = function(event) {
     // Take the event as received and turn it into an object that
     // is easier to handle.
@@ -108,10 +107,6 @@ EventMapper.prototype.makeObject = function(event) {
     e.place_label = event.place_label ? event.place_label.value : '';
     if (event.title) {
         e.title = event.title.value;
-        e.hasDefaultTitle = false;
-    } else {
-        e.title = this.createTitle(e);
-        e.hasDefaultTitle = true;
     }
 
     if (event.polygon) {
@@ -136,15 +131,6 @@ EventMapper.prototype.makeObject = function(event) {
     return e;
 };
 
-EventMapper.prototype.mergeObjects = function(first, second) {
-    var merged = ObjectMapper.prototype.mergeObjects.call(this, first, second);
-    if (merged.hasDefaultTitle) {
-        merged.title = this.createTitle(merged);
-    }
-    return merged;
-};
-
-
 function EventService(url, qry) {
     var endpoint = new SparqlService(url);
     var mapper = new EventMapper();
@@ -156,6 +142,57 @@ function EventService(url, qry) {
     };
 }
 
+function getExtremeDate(dates, min) {
+    if (_.isArray(dates)) {
+        var fun;
+        if (min) {
+            fun = _.min;
+        } else {
+            fun = _.max;
+        }
+        return new Date(fun(dates, function(date) {
+            return new Date(date);
+        }));
+    }
+    if (!dates) {
+        return undefined;
+    }
+    return new Date(dates);
+}
+
+function isFullYear(start, end) {
+    return start.getDate() === 1 && start.getMonth() === 0 && end.getDate() === 31 &&
+            end.getMonth() === 11;
+}
+
+function formatDateRange(start, end) {
+    if (isFullYear(start, end)) {
+        start_year = start.getFullYear();
+        end_year = end.getFullYear();
+        return start_year === end_year ? start_year : start_year + '-' + end_year;
+    }
+    if (end - start) {
+        return start.toLocaleDateString() + '-' + end.toLocaleDateString();
+    }
+    return start.toLocaleDateString();
+}
+
+
+function createTitle(event) {
+    var start = getExtremeDate(event.start_time, true);
+    var end = getExtremeDate(event.end_time, false);
+    var time = formatDateRange(start, end);
+
+    var place;
+    if (_.isArray(event.place_label)) {
+        place = event.place_label.join(", ");
+    } else {
+        place = event.place_label;
+    }
+
+    return place ? place + ' ' + time : time;
+}
+
 function clearElement(id) {
     e = document.getElementById(id);
     while (e.firstChild) { e.removeChild(e.firstChild); }
@@ -165,16 +202,13 @@ function createStoryMap(container_id, url, qry, overview_title, overview_text, m
     var storymap;
 
     var storyMapCallback = function(data) {
-        var res = [
-        {
+        var res = [{
             type: "overview",
-                text: 
-                {
-                    headline: overview_title,
-                    text: overview_text
-                }
-        }
-        ];
+            text: {
+                headline: overview_title,
+                text: overview_text
+            }
+        }];
         data.forEach(function(e) {
             var ev = {};
             if (e.points) {
@@ -184,8 +218,8 @@ function createStoryMap(container_id, url, qry, overview_title, overview_text, m
             }
 
             ev.text = {
-                headline: e.title,
-            text: e.description
+                headline: e.title || createTitle(e),
+                text: e.description
             };
             res.push(ev);
         });
