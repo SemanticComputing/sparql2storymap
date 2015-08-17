@@ -34,7 +34,7 @@ ObjectMapper.prototype.makeObject = function(obj) {
 };
 
 ObjectMapper.prototype.mergeObjects = function(first, second) {
-    // Merge two objects (triples) into one object.
+    // Merge two objects into one object.
     return _.merge(first, second, function(a, b) {
         if (_.isEqual(a, b)) {
             return a;
@@ -67,10 +67,10 @@ ObjectMapper.prototype.mergeObjects = function(first, second) {
     });
 };
 
-ObjectMapper.prototype.makeObjectList = function(objects, callback) {
+ObjectMapper.prototype.makeObjectList = function(objects) {
     // Create a list of the SPARQL results where triples with the same
     // subject are merged into one object.
-    self = this;
+    var self = this;
     var obj_list = _.transform(objects, function(result, obj) {
         obj = self.makeObject(obj);
         // Check if this object has been constructed earlier
@@ -86,7 +86,7 @@ ObjectMapper.prototype.makeObjectList = function(objects, callback) {
             result.push(obj);
         }                
     });
-    return callback(obj_list);
+    return obj_list;
 };
 
 function EventMapper() { }
@@ -137,7 +137,7 @@ function EventService(url, qry) {
 
     this.getEvents = function(callback) {
         return endpoint.getObjects(qry, function(data) { 
-            return mapper.makeObjectList(data, callback);
+            return callback(mapper.makeObjectList(data));
         });
     };
 }
